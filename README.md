@@ -34,8 +34,9 @@ badges, server-side reading position), go to `/library` and press
 **Sign in as demo reader**.
 
 Seed images come from `picsum.photos`, so the first load of a chapter needs
-network access. `next.config.mjs` allows any HTTPS image host — narrow
-`remotePatterns` to your CDN before deploying.
+network access. `next.config.mjs` allows only that host (under `/seed/`) plus
+`localhost` — add your CDN to `remotePatterns` and drop the picsum entry when
+real artwork replaces the placeholders.
 
 ## Scripts
 
