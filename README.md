@@ -7,12 +7,27 @@ PostgreSQL via Prisma. Mobile-first, dark by default, built around the reader.
 
 ```bash
 npm install
-docker compose up -d          # Postgres on :5432 (or point DATABASE_URL anywhere)
-cp .env.example .env          # already copied on first scaffold
+docker compose up -d          # Postgres on :5432
+cp .env.example .env
 npm run db:push               # create the schema
-npm run db:seed               # 12 series, ~240 chapters, a demo reader
+npm run db:seed               # 12 series, 248 chapters, a demo reader
 npm run dev
 ```
+
+### Pointing at a hosted database (Vercel, Neon, Supabase)
+
+One command creates the schema, loads the sample data, and reads it back to
+confirm. It validates the connection string first, so a placeholder fails
+immediately instead of timing out:
+
+```powershell
+.\scripts\setup-db.ps1 -DatabaseUrl "postgresql://...your real string..."
+```
+
+Add `-SkipSeed` for an empty schema. Your local `.env` is untouched and the
+connection string is never written to disk. Set the same `DATABASE_URL` in
+Vercel (Settings -> Environment Variables) and redeploy - env changes do not
+apply to existing deployments.
 
 Open http://localhost:3000. To exercise the signed-in surfaces (bookmarks, unread
 badges, server-side reading position), go to `/library` and press
