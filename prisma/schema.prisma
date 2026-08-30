@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SeriesStatus {
+  ONGOING
+  COMPLETED
+  HIATUS
+  DROPPED
+}
+
+enum ReadingDirection {
+  VERTICAL
+  LTR
+  RTL
+}
+
+model Series {
+  id          String       @id @default(cuid())
+  title       String
+  slug        String       @unique
+  description String       @db.Text
+  coverImage  String
+  status      SeriesStatus @default(ONGOING)
+  author      String
+  artist      String
+  genres      String[]
+  rating      Float        @default(0)
+  views       Int          @default(0)
+  direction   ReadingDirection @default(VERTICAL)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  chapters  Chapter[]
+  bookmarks Bookmark[]
+  comments  Comment[]
+
+  @@index([status])
+  @@index([views])
+  @@index([updatedAt])
+  @@index([genres], type: Gin)
+}
+
+model Chapter {
+  id          String   @id @default(cuid())
+  seriesId    String
+  number      Float
+  title       String?
+  releaseDate DateTime @default(now())
+  viewCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  series  Series          @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  pages   Page[]
+  history ReadingHistory[]
+  bookmarks Bookmark[]
+  comments Comment[]
+
+  @@unique([seriesId, number])
+  @@index([seriesId, number])
+  @@index([releaseDate])
+}
+
+model Page {
+  id        String @id @default(cuid())
+  chapterId String
+  imageUrl  String
+  order     Int
+  width     Int?
+  height    Int?
+  blurData  String?
+
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([chapterId, order])
+  @@index([chapterId, order])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  avatar    String?
+  createdAt DateTime @default(now())
+
+  bookmarks Bookmark[]
+  history   ReadingHistory[]
+  comments  Comment[]
+}
+
+model Bookmark {
+  id                String   @id @default(cuid())
+  userId            String
+  seriesId          String
+  lastReadChapterId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  series          Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  lastReadChapter Chapter? @relation(fields: [lastReadChapterId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, seriesId])
+  @@index([userId, updatedAt])
+}
+
+model ReadingHistory {
+  id             String   @id @default(cuid())
+  userId         String
+  chapterId      String
+  scrollPosition Float    @default(0)
+  completed      Boolean  @default(false)
+  readAt         DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chapterId])
+  @@index([userId, readAt])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  seriesId  String?
+  chapterId String?
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  series  Series?  @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@index([chapterId, createdAt])
+  @@index([seriesId, createdAt])
+}

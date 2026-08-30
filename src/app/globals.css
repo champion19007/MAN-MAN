@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 11 13 18;
+  --surface: 19 22 30;
+  --elevated: 28 32 43;
+  --border: 44 50 64;
+  --fg: 233 237 245;
+  --muted: 148 158 178;
+  --accent: 99 102 241;
+}
+
+html.light {
+  --bg: 249 250 252;
+  --surface: 255 255 255;
+  --elevated: 241 243 248;
+  --border: 219 224 234;
+  --fg: 22 26 34;
+  --muted: 100 110 128;
+  --accent: 79 70 229;
+}
+
+html {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+/* The reader is a long column of images: never let a gap flash between them. */
+.reader-strip img {
+  display: block;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
