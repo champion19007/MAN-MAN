@@ -2,24 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Palette lives here as RGB triples so Tailwind can apply opacity modifiers
+ * (bg-surface/70). To re-theme the whole site, change --accent and --header.
+ */
 :root {
-  --bg: 11 13 18;
-  --surface: 19 22 30;
-  --elevated: 28 32 43;
-  --border: 44 50 64;
-  --fg: 233 237 245;
-  --muted: 148 158 178;
-  --accent: 99 102 241;
+  --bg: 9 11 15;
+  --surface: 16 19 26;
+  --elevated: 25 30 39;
+  --border: 38 45 57;
+  --fg: 234 239 245;
+  --muted: 138 150 167;
+
+  --accent: 20 184 166;
+  --accent-strong: 13 148 136;
+  --accent-fg: 255 255 255;
+
+  --header: 13 118 110;
+  --header-fg: 236 254 250;
+
+  --star: 245 182 66;
 }
 
 html.light {
-  --bg: 249 250 252;
+  --bg: 246 248 250;
   --surface: 255 255 255;
-  --elevated: 241 243 248;
-  --border: 219 224 234;
-  --fg: 22 26 34;
-  --muted: 100 110 128;
-  --accent: 79 70 229;
+  --elevated: 238 242 246;
+  --border: 216 223 231;
+  --fg: 20 26 33;
+  --muted: 95 107 124;
+
+  --accent: 13 148 136;
+  --accent-strong: 15 118 110;
+  --accent-fg: 255 255 255;
+
+  --header: 13 148 136;
+  --header-fg: 255 255 255;
+
+  --star: 217 145 32;
 }
 
 html {

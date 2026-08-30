@@ -71,7 +71,9 @@ export default async function BrowsePage({
         title: true,
         coverImage: true,
         status: true,
+        rating: true,
         updatedAt: true,
+        _count: { select: { chapters: true } },
         chapters: {
           orderBy: { number: 'desc' },
           take: 1,
@@ -85,10 +87,15 @@ export default async function BrowsePage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <h1 className="text-2xl font-bold">Browse</h1>
-      <p className="mt-1 text-sm text-muted">{total} series</p>
+      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
+        <div className="mb-4 flex items-center gap-2">
+          <h1 className="text-xl font-bold">Browse Series</h1>
+          <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-accent-fg">
+            {total}
+          </span>
+        </div>
 
-      <div className="mt-5 space-y-4">
+        <div className="space-y-3">
         <Filter
           label="Genre"
           options={[{ value: '', label: 'All' }, ...GENRES.map((g) => ({ value: g, label: g }))]}
@@ -115,19 +122,23 @@ export default async function BrowsePage({
           active={sortKey}
           hrefFor={(value) => buildHref(searchParams, { sort: value, page: undefined })}
         />
+        </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {series.map((item, i) => (
           <SeriesCard
             key={item.slug}
             slug={item.slug}
             title={item.title}
             coverImage={item.coverImage}
-            priority={i < 6}
-            badge={item.status === 'COMPLETED' ? 'Completed' : null}
-            subtitle={item.chapters[0] ? `Chapter ${item.chapters[0].number}` : null}
+            rating={item.rating}
+            status={item.status}
+            chapterCount={item._count.chapters}
+            latestChapter={item.chapters[0]?.number ?? null}
             updatedAt={item.chapters[0]?.releaseDate ?? item.updatedAt}
+            priority={i < 5}
+            withAction
           />
         ))}
       </div>
@@ -137,30 +148,58 @@ export default async function BrowsePage({
       ) : null}
 
       {pages > 1 ? (
-        <nav className="mt-10 flex items-center justify-center gap-2" aria-label="Pagination">
-          {page > 1 ? (
+        <nav
+          className="mt-8 flex items-center justify-center gap-1.5"
+          aria-label="Pagination"
+        >
+          <Link
+            href={buildHref(searchParams, { page: String(Math.max(1, page - 1)) })}
+            aria-disabled={page === 1}
+            className={`grid h-9 w-9 place-items-center rounded-lg bg-elevated text-sm ${
+              page === 1 ? 'pointer-events-none opacity-40' : 'hover:text-accent'
+            }`}
+          >
+            ‹
+          </Link>
+
+          {pageWindow(page, pages).map((n) => (
             <Link
-              href={buildHref(searchParams, { page: String(page - 1) })}
-              className="rounded-lg border border-border px-3 py-2 text-sm hover:text-accent"
+              key={n}
+              href={buildHref(searchParams, { page: String(n) })}
+              aria-current={n === page ? 'page' : undefined}
+              className={`grid h-9 w-9 place-items-center rounded-lg text-sm font-medium transition-colors ${
+                n === page
+                  ? 'bg-accent text-accent-fg'
+                  : 'bg-elevated text-muted hover:text-fg'
+              }`}
             >
-              ‹ Prev
+              {n}
             </Link>
-          ) : null}
-          <span className="text-sm text-muted">
-            Page {page} of {pages}
-          </span>
-          {page < pages ? (
-            <Link
-              href={buildHref(searchParams, { page: String(page + 1) })}
-              className="rounded-lg border border-border px-3 py-2 text-sm hover:text-accent"
-            >
-              Next ›
-            </Link>
-          ) : null}
+          ))}
+
+          <Link
+            href={buildHref(searchParams, {
+              page: String(Math.min(pages, page + 1)),
+            })}
+            aria-disabled={page === pages}
+            className={`grid h-9 w-9 place-items-center rounded-lg bg-elevated text-sm ${
+              page === pages ? 'pointer-events-none opacity-40' : 'hover:text-accent'
+            }`}
+          >
+            ›
+          </Link>
         </nav>
       ) : null}
     </div>
   );
+}
+
+/** Up to five page numbers centred on the current page. */
+function pageWindow(page: number, pages: number) {
+  const span = Math.min(5, pages);
+  let start = Math.max(1, page - Math.floor(span / 2));
+  if (start + span - 1 > pages) start = pages - span + 1;
+  return Array.from({ length: span }, (_, i) => start + i);
 }
 
 function Filter({
@@ -186,7 +225,7 @@ function Filter({
             href={hrefFor(option.value)}
             className={`rounded-full px-3 py-1.5 text-xs transition-colors ${
               active === option.value
-                ? 'bg-accent text-white'
+                ? 'bg-accent text-accent-fg'
                 : 'bg-elevated text-muted hover:text-fg'
             }`}
           >
