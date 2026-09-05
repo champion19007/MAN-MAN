@@ -7,39 +7,39 @@
  * (bg-surface/70). To re-theme the whole site, change --accent and --header.
  */
 :root {
-  --bg: 9 11 15;
-  --surface: 16 19 26;
-  --elevated: 25 30 39;
-  --border: 38 45 57;
-  --fg: 234 239 245;
-  --muted: 138 150 167;
+  --bg: 4 7 14;
+  --surface: 10 16 30;
+  --elevated: 17 26 46;
+  --border: 30 43 70;
+  --fg: 226 234 247;
+  --muted: 132 148 178;
 
-  --accent: 20 184 166;
-  --accent-strong: 13 148 136;
+  --accent: 59 130 246;
+  --accent-strong: 37 99 235;
   --accent-fg: 255 255 255;
 
-  --header: 13 118 110;
-  --header-fg: 236 254 250;
+  --header: 8 13 26;
+  --header-fg: 226 234 247;
 
   --star: 245 182 66;
 }
 
 html.light {
-  --bg: 246 248 250;
+  --bg: 244 247 252;
   --surface: 255 255 255;
-  --elevated: 238 242 246;
-  --border: 216 223 231;
-  --fg: 20 26 33;
-  --muted: 95 107 124;
+  --elevated: 234 240 249;
+  --border: 210 220 236;
+  --fg: 12 20 36;
+  --muted: 88 102 128;
 
-  --accent: 13 148 136;
-  --accent-strong: 15 118 110;
+  --accent: 37 99 235;
+  --accent-strong: 29 78 216;
   --accent-fg: 255 255 255;
 
-  --header: 13 148 136;
-  --header-fg: 255 255 255;
+  --header: 15 23 42;
+  --header-fg: 236 242 252;
 
-  --star: 217 145 32;
+  --star: 202 138 24;
 }
 
 html {

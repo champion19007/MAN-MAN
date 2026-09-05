@@ -7,6 +7,8 @@ import { GENRES } from '@/lib/format';
 import { SeriesCard } from '@/components/series-card';
 import { BrowseSearch } from '@/components/browse-search';
 import { FilterDropdown } from '@/components/ui/filter-dropdown';
+import { SeriesRow } from '@/components/series-row';
+import { ViewToggle } from '@/components/ui/view-toggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +43,7 @@ type SearchParams = {
   page?: string;
   q?: string;
   min?: string;
+  view?: string;
 };
 
 function buildHref(params: SearchParams, patch: SearchParams) {
@@ -63,6 +66,7 @@ export default async function BrowsePage({
   const page = Math.max(1, Number(searchParams.page) || 1);
   const query = (searchParams.q ?? '').trim();
   const minChapters = Number(searchParams.min) || 0;
+  const view: 'grid' | 'list' = searchParams.view === 'list' ? 'list' : 'grid';
 
   const status = STATUSES.includes(searchParams.status as (typeof STATUSES)[number])
     ? (searchParams.status as SeriesStatus)
@@ -86,6 +90,9 @@ export default async function BrowsePage({
         slug: true,
         title: true,
         coverImage: true,
+        description: true,
+        genres: true,
+        views: true,
         status: true,
         rating: true,
         updatedAt: true,
@@ -180,31 +187,55 @@ export default async function BrowsePage({
             ]}
           />
 
-          <div className="ml-auto w-full sm:w-auto">
+          <div className="ml-auto flex w-full items-center gap-2 sm:w-auto">
             <BrowseSearch initial={query} params={searchParams} />
+            <ViewToggle
+              view={view}
+              gridHref={buildHref(searchParams, { view: undefined })}
+              listHref={buildHref(searchParams, { view: 'list' })}
+            />
           </div>
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {visible.map((item, i) => (
-          <SeriesCard
-            key={item.slug}
-            slug={item.slug}
-            title={item.title}
-            coverImage={item.coverImage}
-            rating={item.rating}
-            status={item.status}
-            chapterCount={item._count.chapters}
-            latestChapter={item.chapters[0]?.number ?? null}
-            updatedAt={item.chapters[0]?.releaseDate ?? item.updatedAt}
-            priority={i < 5}
-            seriesId={item.id}
-            bookmarked={bookmarked.has(item.id)}
-            signedIn={Boolean(userId)}
-          />
-        ))}
-      </div>
+      {view === 'list' ? (
+        <div className="mt-6 grid gap-3 lg:grid-cols-2">
+          {visible.map((item, i) => (
+            <SeriesRow
+              key={item.slug}
+              slug={item.slug}
+              title={item.title}
+              coverImage={item.coverImage}
+              description={item.description}
+              genres={item.genres}
+              status={item.status}
+              views={item.views}
+              chapterCount={item._count.chapters}
+              priority={i < 4}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {visible.map((item, i) => (
+            <SeriesCard
+              key={item.slug}
+              slug={item.slug}
+              title={item.title}
+              coverImage={item.coverImage}
+              rating={item.rating}
+              status={item.status}
+              chapterCount={item._count.chapters}
+              latestChapter={item.chapters[0]?.number ?? null}
+              updatedAt={item.chapters[0]?.releaseDate ?? item.updatedAt}
+              priority={i < 5}
+              seriesId={item.id}
+              bookmarked={bookmarked.has(item.id)}
+              signedIn={Boolean(userId)}
+            />
+          ))}
+        </div>
+      )}
 
       {visible.length === 0 ? (
         <p className="mt-10 text-center text-sm text-muted">
