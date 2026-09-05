@@ -7,9 +7,14 @@ const prisma = new PrismaClient();
  * Placeholder art. Swap `cover`/`page` for your CDN (R2/S3) URLs when real
  * assets land; nothing else in the seed depends on where the images live.
  */
-// Chapter interiors are still placeholder art; only covers are generated.
-const page = (seed: string, n: number) =>
-  `https://picsum.photos/seed/${seed}-${n}/800/1200`;
+import { HUES, LAYOUTS } from '../scripts/generate-panels';
+
+/**
+ * Placeholder panels from the generated pool: hue by series so chapters of one
+ * title hang together, layout by page so a chapter reads as a sequence.
+ */
+const page = (seriesIndex: number, chapter: number, pageIndex: number) =>
+  `/panels/h${HUES[seriesIndex % HUES.length]}-${(chapter + pageIndex) % LAYOUTS}.svg`;
 
 const CHAPTER_TITLES = [
   'The First Fall',
@@ -72,7 +77,7 @@ async function main() {
           viewCount: Math.round(series.views / chapterCount),
           pages: {
             create: Array.from({ length: pageCount }, (_, i) => ({
-              imageUrl: page(`${entry.slug}-c${n}`, i + 1),
+              imageUrl: page(seriesIndex, n, i),
               order: i + 1,
               width: 800,
               height: 1200,

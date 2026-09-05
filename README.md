@@ -33,10 +33,14 @@ Open http://localhost:3000. To exercise the signed-in surfaces (bookmarks, unrea
 badges, server-side reading position), go to `/library` and press
 **Sign in as demo reader**.
 
-Seed images come from `picsum.photos`, so the first load of a chapter needs
-network access. `next.config.mjs` allows only that host (under `/seed/`) plus
-`localhost` — add your CDN to `remotePatterns` and drop the picsum entry when
-real artwork replaces the placeholders.
+All artwork is generated locally and served from `/public`, so the app needs no
+external image host and `next.config.mjs` has an empty `remotePatterns`:
+
+- `npm run gen:covers` - one typographic SVG cover per series
+- `npm run gen:panels` - a pool of 36 chapter panels (6 hues x 6 layouts)
+
+Both are placeholders for real artwork. Point `Page.imageUrl` and
+`Series.coverImage` at your CDN and add that host to `remotePatterns`.
 
 ## Scripts
 

@@ -1,8 +1,9 @@
 /**
- * Every host listed here can be proxied through the image optimizer at your
- * own bandwidth and billing, so keep this list to hosts you actually serve
- * pages from. Add your CDN (R2/S3/CloudFront) here and drop `picsum.photos`
- * once real assets replace the seed placeholders.
+ * Covers and chapter panels are generated into /public, so there is no remote
+ * image host and `remotePatterns` is empty. Every host added here can be
+ * proxied through the image optimiser at your own bandwidth and billing, so
+ * add only hosts you actually serve pages from - your CDN, when artwork moves
+ * to object storage.
  *
  * @type {import('next').NextConfig}
  */
@@ -15,12 +16,10 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    remotePatterns: [
-      // Seed/demo artwork only.
-      { protocol: 'https', hostname: 'picsum.photos', pathname: '/seed/**' },
-      // Local asset server during development.
-      { protocol: 'http', hostname: 'localhost' },
-    ],
+    // No remote hosts: covers and panels are generated into /public, and
+    // imported library pages are copied there too. Add your CDN here when real
+    // artwork moves to object storage.
+    remotePatterns: [],
   },
 };
 

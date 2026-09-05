@@ -11,7 +11,9 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate",
-    "import:cbz": "tsx scripts/import-cbz.ts"
+    "import:cbz": "tsx scripts/import-cbz.ts",
+    "gen:covers": "tsx scripts/generate-covers.ts",
+    "gen:panels": "tsx scripts/generate-panels.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

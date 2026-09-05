@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" width="800" height="1200" role="img" aria-label="Comic panel">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="hsl(150 40% 12%)"/>
+      <stop offset="100%" stop-color="hsl(150 45% 6%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1200" fill="url(#bg)"/>
+<rect x="40" y="40" width="352" height="1120" rx="6"
+    fill="hsl(150 45% 28%)" stroke="hsl(150 30% 8%)" stroke-width="4"/>
+<rect x="408" y="40" width="352" height="1120" rx="6"
+    fill="hsl(150 45% 18%)" stroke="hsl(150 30% 8%)" stroke-width="4"/>
+
+  <g>
+    <rect x="78" y="192" width="300" height="130" rx="38"
+      fill="hsl(150 22% 96%)" opacity="0.93"/>
+    <path d="M122 322 L156 322 L130 352 Z"
+      fill="hsl(150 22% 96%)" opacity="0.93"/>
+    <rect x="104" y="226" width="154" height="9" rx="4.5" fill="hsl(150 20% 92%)" opacity="0.75"/><rect x="104" y="252" width="208" height="9" rx="4.5" fill="hsl(150 20% 92%)" opacity="0.75"/><rect x="104" y="278" width="124" height="9" rx="4.5" fill="hsl(150 20% 92%)" opacity="0.75"/>
+  </g>
+</svg>
