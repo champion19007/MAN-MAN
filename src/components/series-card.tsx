@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { timeAgo } from '@/lib/format';
+import { CardBookmarkButton } from '@/components/card-bookmark-button';
 
 const STATUS_LABEL: Record<string, string> = {
   ONGOING: 'Ongoing',
@@ -22,6 +23,10 @@ type Props = {
   priority?: boolean;
   /** Renders the card as a browse tile with a footer action. */
   withAction?: boolean;
+  /** Supplying these turns the footer action into a bookmark toggle. */
+  seriesId?: string;
+  bookmarked?: boolean;
+  signedIn?: boolean;
 };
 
 export function SeriesCard({
@@ -36,6 +41,9 @@ export function SeriesCard({
   unread,
   priority,
   withAction,
+  seriesId,
+  bookmarked = false,
+  signedIn = false,
 }: Props) {
   return (
     <div className="group overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent/60">
@@ -91,7 +99,13 @@ export function SeriesCard({
         </div>
       </Link>
 
-      {withAction ? (
+      {seriesId ? (
+        <CardBookmarkButton
+          seriesId={seriesId}
+          initial={bookmarked}
+          signedIn={signedIn}
+        />
+      ) : withAction ? (
         <Link
           href={`/series/${slug}`}
           className="block bg-accent px-3 py-2 text-center text-xs font-semibold text-accent-fg transition-opacity hover:opacity-90"

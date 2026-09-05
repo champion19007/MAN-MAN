@@ -2,10 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Prisma, SeriesStatus } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import { getCurrentUserId } from '@/lib/session';
 import { GENRES } from '@/lib/format';
 import { SeriesCard } from '@/components/series-card';
+import { BrowseSearch } from '@/components/browse-search';
+import { FilterDropdown } from '@/components/ui/filter-dropdown';
 
-export const revalidate = 120;
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Browse series',
@@ -13,7 +16,7 @@ export const metadata: Metadata = {
     'Browse every manga and manhwa on ManMan by genre, status, popularity, and release date.',
 };
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 25;
 
 const SORTS = {
   latest: { updatedAt: 'desc' },
@@ -22,6 +25,13 @@ const SORTS = {
   title: { title: 'asc' },
 } satisfies Record<string, Prisma.SeriesOrderByWithRelationInput>;
 
+const SORT_LABELS: Record<keyof typeof SORTS, string> = {
+  latest: 'Latest Update',
+  views: 'Most Viewed',
+  rating: 'Top Rated',
+  title: 'A-Z',
+};
+
 const STATUSES = ['ONGOING', 'COMPLETED', 'HIATUS', 'DROPPED'] as const;
 
 type SearchParams = {
@@ -29,6 +39,8 @@ type SearchParams = {
   status?: string;
   sort?: string;
   page?: string;
+  q?: string;
+  min?: string;
 };
 
 function buildHref(params: SearchParams, patch: SearchParams) {
@@ -49,6 +61,8 @@ export default async function BrowsePage({
   const sortKey = (searchParams.sort ?? 'latest') as keyof typeof SORTS;
   const orderBy = SORTS[sortKey] ?? SORTS.latest;
   const page = Math.max(1, Number(searchParams.page) || 1);
+  const query = (searchParams.q ?? '').trim();
+  const minChapters = Number(searchParams.min) || 0;
 
   const status = STATUSES.includes(searchParams.status as (typeof STATUSES)[number])
     ? (searchParams.status as SeriesStatus)
@@ -57,9 +71,10 @@ export default async function BrowsePage({
   const where: Prisma.SeriesWhereInput = {
     ...(status ? { status } : {}),
     ...(searchParams.genre ? { genres: { has: searchParams.genre } } : {}),
+    ...(query ? { title: { contains: query, mode: 'insensitive' } } : {}),
   };
 
-  const [total, series] = await Promise.all([
+  const [total, series, userId] = await Promise.all([
     prisma.series.count({ where }),
     prisma.series.findMany({
       where,
@@ -67,6 +82,7 @@ export default async function BrowsePage({
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       select: {
+        id: true,
         slug: true,
         title: true,
         coverImage: true,
@@ -81,7 +97,25 @@ export default async function BrowsePage({
         },
       },
     }),
+    getCurrentUserId(),
   ]);
+
+  // "Minimum chapters" filters on a relation count, which Prisma cannot express
+  // in `where`, so it is applied after the page is fetched.
+  const visible = minChapters
+    ? series.filter((item) => item._count.chapters >= minChapters)
+    : series;
+
+  const bookmarked = userId
+    ? new Set(
+        (
+          await prisma.bookmark.findMany({
+            where: { userId, seriesId: { in: visible.map((s) => s.id) } },
+            select: { seriesId: true },
+          })
+        ).map((b) => b.seriesId),
+      )
+    : new Set<string>();
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -90,43 +124,70 @@ export default async function BrowsePage({
       <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
         <div className="mb-4 flex items-center gap-2">
           <h1 className="text-xl font-bold">Browse Series</h1>
-          <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-accent-fg">
+          <span className="rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-accent-fg tabular-nums">
             {total}
           </span>
         </div>
 
-        <div className="space-y-3">
-        <Filter
-          label="Genre"
-          options={[{ value: '', label: 'All' }, ...GENRES.map((g) => ({ value: g, label: g }))]}
-          active={searchParams.genre ?? ''}
-          hrefFor={(value) => buildHref(searchParams, { genre: value, page: undefined })}
-        />
-        <Filter
-          label="Status"
-          options={[
-            { value: '', label: 'Any' },
-            ...STATUSES.map((s) => ({ value: s, label: s[0] + s.slice(1).toLowerCase() })),
-          ]}
-          active={searchParams.status ?? ''}
-          hrefFor={(value) => buildHref(searchParams, { status: value, page: undefined })}
-        />
-        <Filter
-          label="Sort"
-          options={[
-            { value: 'latest', label: 'Latest' },
-            { value: 'views', label: 'Most viewed' },
-            { value: 'rating', label: 'Top rated' },
-            { value: 'title', label: 'A–Z' },
-          ]}
-          active={sortKey}
-          hrefFor={(value) => buildHref(searchParams, { sort: value, page: undefined })}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <FilterDropdown
+            label="Sort"
+            icon="⇅"
+            active={sortKey}
+            options={(Object.keys(SORTS) as (keyof typeof SORTS)[]).map((key) => ({
+              value: key,
+              label: SORT_LABELS[key],
+              href: buildHref(searchParams, { sort: key, page: undefined }),
+            }))}
+          />
+
+          <FilterDropdown
+            label="Status"
+            active={searchParams.status ?? ''}
+            options={[
+              { value: '', label: 'Any status', href: buildHref(searchParams, { status: undefined, page: undefined }) },
+              ...STATUSES.map((s) => ({
+                value: s,
+                label: s[0] + s.slice(1).toLowerCase(),
+                href: buildHref(searchParams, { status: s, page: undefined }),
+              })),
+            ]}
+          />
+
+          <FilterDropdown
+            label="Genres"
+            active={searchParams.genre ?? ''}
+            options={[
+              { value: '', label: 'All genres', href: buildHref(searchParams, { genre: undefined, page: undefined }) },
+              ...GENRES.map((g) => ({
+                value: g,
+                label: g,
+                href: buildHref(searchParams, { genre: g, page: undefined }),
+              })),
+            ]}
+          />
+
+          <FilterDropdown
+            label="Minimum Chapters"
+            active={searchParams.min ?? ''}
+            options={[
+              { value: '', label: 'Any length', href: buildHref(searchParams, { min: undefined, page: undefined }) },
+              ...['10', '20', '50', '100'].map((n) => ({
+                value: n,
+                label: `${n}+ chapters`,
+                href: buildHref(searchParams, { min: n, page: undefined }),
+              })),
+            ]}
+          />
+
+          <div className="ml-auto w-full sm:w-auto">
+            <BrowseSearch initial={query} params={searchParams} />
+          </div>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {series.map((item, i) => (
+        {visible.map((item, i) => (
           <SeriesCard
             key={item.slug}
             slug={item.slug}
@@ -138,13 +199,20 @@ export default async function BrowsePage({
             latestChapter={item.chapters[0]?.number ?? null}
             updatedAt={item.chapters[0]?.releaseDate ?? item.updatedAt}
             priority={i < 5}
-            withAction
+            seriesId={item.id}
+            bookmarked={bookmarked.has(item.id)}
+            signedIn={Boolean(userId)}
           />
         ))}
       </div>
 
-      {series.length === 0 ? (
-        <p className="mt-10 text-sm text-muted">No series match these filters.</p>
+      {visible.length === 0 ? (
+        <p className="mt-10 text-center text-sm text-muted">
+          No series match these filters.{' '}
+          <Link href="/series" className="text-accent hover:underline">
+            Clear them
+          </Link>
+        </p>
       ) : null}
 
       {pages > 1 ? (
@@ -167,7 +235,7 @@ export default async function BrowsePage({
               key={n}
               href={buildHref(searchParams, { page: String(n) })}
               aria-current={n === page ? 'page' : undefined}
-              className={`grid h-9 w-9 place-items-center rounded-lg text-sm font-medium transition-colors ${
+              className={`grid h-9 w-9 place-items-center rounded-lg text-sm font-medium tabular-nums transition-colors ${
                 n === page
                   ? 'bg-accent text-accent-fg'
                   : 'bg-elevated text-muted hover:text-fg'
@@ -200,39 +268,4 @@ function pageWindow(page: number, pages: number) {
   let start = Math.max(1, page - Math.floor(span / 2));
   if (start + span - 1 > pages) start = pages - span + 1;
   return Array.from({ length: span }, (_, i) => start + i);
-}
-
-function Filter({
-  label,
-  options,
-  active,
-  hrefFor,
-}: {
-  label: string;
-  options: { value: string; label: string }[];
-  active: string;
-  hrefFor: (value: string) => string;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="w-16 shrink-0 text-xs uppercase tracking-wider text-muted">
-        {label}
-      </span>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map((option) => (
-          <Link
-            key={option.value || 'all'}
-            href={hrefFor(option.value)}
-            className={`rounded-full px-3 py-1.5 text-xs transition-colors ${
-              active === option.value
-                ? 'bg-accent text-accent-fg'
-                : 'bg-elevated text-muted hover:text-fg'
-            }`}
-          >
-            {option.label}
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
 }

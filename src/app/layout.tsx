@@ -3,6 +3,7 @@ import './globals.css';
 import { getTheme } from '@/lib/session';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { BackToTop } from '@/components/ui/back-to-top';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader theme={theme} />
         <main>{children}</main>
         <SiteFooter />
+        <BackToTop />
       </body>
     </html>
   );
