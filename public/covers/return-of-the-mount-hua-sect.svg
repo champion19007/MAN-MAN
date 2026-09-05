@@ -23,7 +23,7 @@
     <text x="34" y="365" font-family="Georgia, 'Times New Roman', serif" font-size="46" font-weight="700" fill="#ffffff" letter-spacing="-0.5">HUA SECT</text>
 
   <rect x="34" y="391" width="56" height="3" fill="hsl(140 85% 65%)"/>
-  <text x="34" y="442" font-family="Verdana, Geneva, sans-serif" font-size="15" fill="#ffffff" opacity="0.72">Biga</text>
+  <text x="34" y="442" font-family="Verdana, Geneva, sans-serif" font-size="15" fill="#ffffff" opacity="0.72">Unknown</text>
 
   <rect x="8" y="8" width="384" height="584" fill="none" stroke="#ffffff" stroke-opacity="0.16" rx="10"/>
 </svg>

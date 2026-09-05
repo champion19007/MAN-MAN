@@ -37,17 +37,23 @@ export function formatViews(views: number) {
 }
 
 export const GENRES = [
+  'Academy',
   'Action',
   'Adventure',
   'Comedy',
+  'Cultivation',
   'Drama',
   'Fantasy',
   'Horror',
   'Isekai',
   'Martial Arts',
+  'Murim',
   'Mystery',
+  'Overpowered',
+  'Regression',
   'Romance',
   'Sci-Fi',
   'Slice of Life',
+  'System',
   'Thriller',
 ] as const;

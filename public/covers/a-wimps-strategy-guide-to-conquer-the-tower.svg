@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600" role="img" aria-label="A Wimp&apos;s Strategy Guide to Conquer the Tower">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(40 62% 26%)"/>
+      <stop offset="55%" stop-color="hsl(20 55% 15%)"/>
+      <stop offset="100%" stop-color="hsl(20 60% 8%)"/>
+    </linearGradient>
+    <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="55%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="600" fill="url(#g)"/>
+  <circle cx="340" cy="120" r="190" fill="hsl(40 80% 60%)" opacity="0.12"/>
+  <circle cx="40" cy="510" r="150" fill="hsl(20 80% 60%)" opacity="0.10"/>
+  <path d="M0 372 L400 264 L400 600 L0 600 Z" fill="#000000" opacity="0.18"/>
+  <rect width="400" height="600" fill="url(#v)"/>
+
+    <text x="34" y="244" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#ffffff" letter-spacing="-0.5">A WIMP&apos;S</text>
+    <text x="34" y="289" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#ffffff" letter-spacing="-0.5">STRATEGY</text>
+    <text x="34" y="334" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#ffffff" letter-spacing="-0.5">GUIDE TO</text>
+    <text x="34" y="379" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#ffffff" letter-spacing="-0.5">CONQUER THE</text>
+
+  <rect x="34" y="402" width="56" height="3" fill="hsl(40 85% 65%)"/>
+  <text x="34" y="450" font-family="Verdana, Geneva, sans-serif" font-size="15" fill="#ffffff" opacity="0.72">Unknown</text>
+
+  <rect x="8" y="8" width="384" height="584" fill="none" stroke="#ffffff" stroke-opacity="0.16" rx="10"/>
+</svg>
