@@ -9,6 +9,12 @@
 const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Covers under /public/covers are SVGs we generate ourselves. The sandbox
+    // CSP below is Next's documented guard for serving SVG through the
+    // optimizer - it blocks scripts inside any SVG that reaches it.
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       // Seed/demo artwork only.
       { protocol: 'https', hostname: 'picsum.photos', pathname: '/seed/**' },

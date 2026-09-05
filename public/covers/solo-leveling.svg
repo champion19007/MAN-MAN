@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600" role="img" aria-label="Solo Leveling">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(225 62% 26%)"/>
+      <stop offset="55%" stop-color="hsl(275 55% 15%)"/>
+      <stop offset="100%" stop-color="hsl(275 60% 8%)"/>
+    </linearGradient>
+    <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="55%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="600" fill="url(#g)"/>
+  <circle cx="340" cy="120" r="190" fill="hsl(225 80% 60%)" opacity="0.12"/>
+  <circle cx="40" cy="510" r="150" fill="hsl(275 80% 60%)" opacity="0.10"/>
+  <path d="M0 372 L400 264 L400 600 L0 600 Z" fill="#000000" opacity="0.18"/>
+  <rect width="400" height="600" fill="url(#v)"/>
+
+    <text x="34" y="285" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700" fill="#ffffff" letter-spacing="-0.5">SOLO</text>
+    <text x="34" y="346" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700" fill="#ffffff" letter-spacing="-0.5">LEVELING</text>
+
+  <rect x="34" y="377" width="56" height="3" fill="hsl(225 85% 65%)"/>
+  <text x="34" y="432" font-family="Verdana, Geneva, sans-serif" font-size="15" fill="#ffffff" opacity="0.72">Chugong</text>
+
+  <rect x="8" y="8" width="384" height="584" fill="none" stroke="#ffffff" stroke-opacity="0.16" rx="10"/>
+</svg>
