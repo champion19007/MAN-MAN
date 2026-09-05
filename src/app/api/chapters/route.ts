@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   }
 
   const chapter = await prisma.chapter.findFirst({
-    where: { number, series: { slug } },
+    where: { number, series: { slug, published: true } },
     select: {
       id: true,
       number: true,

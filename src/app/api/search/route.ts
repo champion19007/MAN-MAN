@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { PUBLIC_SERIES } from '@/lib/visibility';
 import { clientKey, rateLimit } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
@@ -18,6 +19,7 @@ export async function GET(request: Request) {
 
   const results = await prisma.series.findMany({
     where: {
+      ...PUBLIC_SERIES,
       OR: [
         { title: { contains: query, mode: 'insensitive' } },
         { author: { contains: query, mode: 'insensitive' } },

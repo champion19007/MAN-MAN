@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { PUBLIC_SERIES } from '@/lib/visibility';
 import { formatViews } from '@/lib/format';
 import { StarRating } from '@/components/ui/star-rating';
 
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 
 export default async function RankingsPage() {
   const series = await prisma.series.findMany({
+    where: PUBLIC_SERIES,
     orderBy: { views: 'desc' },
     take: 50,
     select: {

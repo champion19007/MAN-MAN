@@ -18,7 +18,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 async function getSeries(slug: string) {
   return prisma.series.findUnique({
-    where: { slug },
+    where: { slug, published: true },
     include: {
       chapters: {
         orderBy: { number: 'desc' },
@@ -34,7 +34,7 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const series = await prisma.series.findUnique({
-    where: { slug: params.slug },
+    where: { slug: params.slug, published: true },
     select: { title: true, description: true, coverImage: true },
   });
   if (!series) return { title: 'Series not found' };

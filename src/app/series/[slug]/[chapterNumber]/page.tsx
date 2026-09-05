@@ -15,7 +15,7 @@ function parseNumber(value: string) {
 
 async function getChapter(slug: string, number: number) {
   return prisma.chapter.findFirst({
-    where: { number, series: { slug } },
+    where: { number, series: { slug, published: true } },
     select: {
       id: true,
       number: true,
@@ -45,7 +45,7 @@ export async function generateMetadata({
   if (number === null) return { title: 'Chapter not found' };
 
   const chapter = await prisma.chapter.findFirst({
-    where: { number, series: { slug: params.slug } },
+    where: { number, series: { slug: params.slug, published: true } },
     select: {
       number: true,
       title: true,

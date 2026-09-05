@@ -13,7 +13,8 @@
     "postinstall": "prisma generate",
     "import:cbz": "tsx scripts/import-cbz.ts",
     "gen:covers": "tsx scripts/generate-covers.ts",
-    "gen:panels": "tsx scripts/generate-panels.ts"
+    "gen:panels": "tsx scripts/generate-panels.ts",
+    "covers:link": "tsx scripts/link-covers.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

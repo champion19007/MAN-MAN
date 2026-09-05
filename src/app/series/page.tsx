@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Prisma, SeriesStatus } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUserId } from '@/lib/session';
+import { PUBLIC_SERIES } from '@/lib/visibility';
 import { GENRES } from '@/lib/format';
 import { SeriesCard } from '@/components/series-card';
 import { BrowseSearch } from '@/components/browse-search';
@@ -73,6 +74,7 @@ export default async function BrowsePage({
     : undefined;
 
   const where: Prisma.SeriesWhereInput = {
+    ...PUBLIC_SERIES,
     ...(status ? { status } : {}),
     ...(searchParams.genre ? { genres: { has: searchParams.genre } } : {}),
     ...(query ? { title: { contains: query, mode: 'insensitive' } } : {}),

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { PUBLIC_SERIES } from '@/lib/visibility';
 import { getCurrentUserId } from '@/lib/session';
 import { HeroCarousel } from '@/components/home/hero-carousel';
 import { LatestUpdates } from '@/components/home/latest-updates';
@@ -28,18 +29,19 @@ async function getPopular(): Promise<PopularSets> {
 
   const [weekly, monthly, allTime] = await Promise.all([
     prisma.series.findMany({
-      where: { chapters: { some: { releaseDate: { gte: since(7) } } } },
+      where: { ...PUBLIC_SERIES, chapters: { some: { releaseDate: { gte: since(7) } } } },
       orderBy: { views: 'desc' },
       take: 10,
       select: POPULAR_SELECT,
     }),
     prisma.series.findMany({
-      where: { chapters: { some: { releaseDate: { gte: since(30) } } } },
+      where: { ...PUBLIC_SERIES, chapters: { some: { releaseDate: { gte: since(30) } } } },
       orderBy: { views: 'desc' },
       take: 10,
       select: POPULAR_SELECT,
     }),
     prisma.series.findMany({
+      where: PUBLIC_SERIES,
       orderBy: { views: 'desc' },
       take: 10,
       select: POPULAR_SELECT,
@@ -52,6 +54,7 @@ async function getPopular(): Promise<PopularSets> {
 async function getHomeData() {
   const [featured, trending, latest, popular] = await Promise.all([
     prisma.series.findMany({
+      where: PUBLIC_SERIES,
       orderBy: { views: 'desc' },
       take: 9,
       select: {
@@ -63,6 +66,7 @@ async function getHomeData() {
       },
     }),
     prisma.series.findMany({
+      where: PUBLIC_SERIES,
       orderBy: { views: 'desc' },
       take: 12,
       select: {
@@ -80,6 +84,7 @@ async function getHomeData() {
       },
     }),
     prisma.series.findMany({
+      where: PUBLIC_SERIES,
       orderBy: { updatedAt: 'desc' },
       take: 16,
       select: {

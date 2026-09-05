@@ -58,6 +58,8 @@ async function main() {
       data: {
         ...rest,
         coverImage: `/covers/${entry.slug}.svg`,
+        published: true,
+        publishedAt: new Date(),
         updatedAt,
       },
     });

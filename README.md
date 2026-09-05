@@ -39,8 +39,32 @@ external image host and `next.config.mjs` has an empty `remotePatterns`:
 - `npm run gen:covers` - one typographic SVG cover per series
 - `npm run gen:panels` - a pool of 36 chapter panels (6 hues x 6 layouts)
 
-Both are placeholders for real artwork. Point `Page.imageUrl` and
-`Series.coverImage` at your CDN and add that host to `remotePatterns`.
+Both are placeholders for real artwork.
+
+### Going live with real covers
+
+Nothing is publicly visible until `Series.published` is true - a title can sit
+in the database with all its chapters while rights or artwork are still
+pending. Browse, search, rankings, the home page, the series route, the reader
+and the chapters API all filter on it, so an unpublished title 404s rather than
+half-appearing.
+
+When artwork arrives, name the files after the slug and drop them in:
+
+```
+public/covers/solo-leveling.jpg
+public/covers/tower-of-god.webp
+```
+
+```bash
+npm run covers:link -- --dry-run    # report, write nothing
+npm run covers:link -- --publish    # link the art and make those titles live
+```
+
+Raster files beat the generated `.svg`, and only real artwork is ever
+published - a placeholder never is. Titles with no file keep their generated
+cover and stay hidden, so a launch can go out with whatever has landed and the
+rest follow as they arrive.
 
 ## Scripts
 
